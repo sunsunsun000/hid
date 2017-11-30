@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">UsbHidCom</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="device_connect">    设备已连接</string>
+    <string name="device_disconnect">    设备已拔出</string>
+    <string name="send">  发送</string>
+ 	<string name="read">  读到</string>
+ 	
+ 	
+</resources>
