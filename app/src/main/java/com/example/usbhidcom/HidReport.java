@@ -53,7 +53,9 @@ public class HidReport {
 		// 1. 读取文件输入流
 		try {
 //			reader = context.getAssets().open(fileName);
-			reader = new FileInputStream(fileName);
+			File myfile =new File(fileName);
+			Log.d(TAG,"myfile.getPath()="+myfile.getPath());
+			reader = new FileInputStream(myfile);
 			byte[] buf = new byte[REPORT_LEN+1];
 			int read = 0;
 			// 将文件输入流 循环 读入 Socket的输出流中
