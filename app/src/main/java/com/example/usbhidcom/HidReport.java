@@ -3,11 +3,14 @@ package com.example.usbhidcom;
 import android.content.Context;
 import android.util.Log;
 
+import com.sdses.tool.Util;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class HidReport {
 
@@ -29,8 +32,9 @@ public class HidReport {
 		File fd = new File("/dev/hidg0");
 
 		try {
-			outHid = new FileOutputStream(fd);
 			inHid = new FileInputStream(fd);
+			outHid = new FileOutputStream(fd);
+
 		} catch (FileNotFoundException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -56,13 +60,16 @@ public class HidReport {
 			File myfile =new File(fileName);
 			Log.d(TAG,"myfile.getPath()="+myfile.getPath());
 			reader = new FileInputStream(myfile);
-			byte[] buf = new byte[REPORT_LEN+1];
+			byte[] buf = new byte[REPORT_LEN];
 			int read = 0;
 			// 将文件输入流 循环 读入 Socket的输出流中
-			while ((read = reader.read(buf, 1, REPORT_LEN)) != -1) {
-				buf[0] = (byte) read;
+			while ((read = reader.read(buf, 2, REPORT_LEN-2)) != -1) {
+
 				Log.d(TAG,"从文件读取字节数:"+read);
-				outHid.write(buf, 0, read);
+				buf[0] = (byte) ((read>>8)&0xFF);
+				buf[1] = (byte) (read&0xFF);
+				Log.d(TAG,"buf="+ Util.toHexStringWithSpace(buf,read+2));
+				outHid.write(buf, 0, read+2);
 				outHid.flush();
 			}
 			Log.i(TAG, "发送数据结束");
@@ -111,18 +118,23 @@ public class HidReport {
 		return true;
 	}
 
+	byte tempBuf[] = new byte[REPORT_LEN];
 	// 读报告，自定义报告首字节存包的数据长度
 	public int readReport(byte RxBuf[]) {
 		int count = 0;
-		byte tempBuf[] = new byte[REPORT_LEN];
-
+		Arrays.fill(tempBuf, (byte) 0x00);
 		try {
-			if (inHid.read(tempBuf, 0, REPORT_LEN) <= 0) { // 读取报告
+			if(inHid.available()>0){
+				Log.d(TAG,"inHid.available()="+inHid.available());
+			if (inHid.read(tempBuf, 0, REPORT_LEN) <=0) { // 读取报告
 				return -1;
 			} else {
-				count = tempBuf[0] & 0xff; // 注意 ，最大是REPORT_LEN
-											// -1，因为用一个当做自定义存放长度
+				//count = ((tempBuf[0] & 0xFF)<<8)|(tempBuf[1] & 0xFF); // 注意 ，最大是REPORT_LEN
+				count = (tempBuf[0] & 0xFF);
+				Log.d(TAG,"count="+count);
+				// -1，因为用一个当做自定义存放长度
 				System.arraycopy(tempBuf, 1, RxBuf, 0, count);
+			}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

@@ -110,18 +110,18 @@ public class MainActivity extends Activity {
 
 		@Override
 		public void onClick(View arg0) {
-			Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-			intent.setType("image/*");//设置类型，我这里是任意类型，任意后缀的可以这样写。
-			intent.addCategory(Intent.CATEGORY_OPENABLE);
-			startActivityForResult(intent,1);
-
-//			USBSenderHandler myUSBHandler = sender.getUSBSendHandler();
-//			Message msg_bluetooth = myUSBHandler.obtainMessage();
-//			Bundle myBundle = new Bundle();
-//			msg_bluetooth.arg1 = 2;
-//			myBundle.putString("send", "");
-//			msg_bluetooth.setData(myBundle);
-//			myUSBHandler.sendMessage(msg_bluetooth);
+//			Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+//			intent.setType("image/*");//设置类型，我这里是任意类型，任意后缀的可以这样写。
+//			intent.addCategory(Intent.CATEGORY_OPENABLE);
+//			startActivityForResult(intent,1);
+			Log.d(TAG,"开始发送文件");
+			USBSenderHandler myUSBHandler = sender.getUSBSendHandler();
+			Message msg_bluetooth = myUSBHandler.obtainMessage();
+			Bundle myBundle = new Bundle();
+			msg_bluetooth.arg1 = 2;
+			myBundle.putString("send", "");
+			msg_bluetooth.setData(myBundle);
+			myUSBHandler.sendMessage(msg_bluetooth);
 
 		}
 

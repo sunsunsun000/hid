@@ -4,6 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+
 //USB堵塞方式接收数据
 public class USBReceiver extends Thread {
 	private static final String TAG = USBReceiver.class.getSimpleName();
@@ -23,8 +28,20 @@ public class USBReceiver extends Thread {
 		// TODO Auto-generated method stub
 		super.run();
 		while (true) {
+			Arrays.fill(tempBuf,(byte)0x00);
 			RxCount = hidOp.readReport(tempBuf); // 阻塞读报告
 			if (RxCount > 0) {
+				try {
+					FileOutputStream fos = new FileOutputStream("/sdcard/recv.txt",true);
+					fos.write(tempBuf,0,RxCount);
+					fos.close();
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+
 				Log.d(TAG,"通知UI接受到数据"+RxCount);
 				Intent myIntent = new Intent();
 				myIntent.setAction("com.sdses.action.usbrecv");	//指定消息接收者

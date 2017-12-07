@@ -39,7 +39,7 @@ public class USBSenderHandler extends Handler {
 			//文件路径
 			String txtPath = bundle.getString("send");
 			Log.d(TAG,"发送文件路径:"+txtPath);
-//			txtPath="/sdcard/ssss.jpg";
+			txtPath="/sdcard/recv.txt";
 			hidOp.sendFile(txtPath);
 			break;
 		}
