@@ -1,7 +1,6 @@
 package com.example.usbhidcom;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
 import java.io.FileNotFoundException;
@@ -23,11 +22,13 @@ public class USBReceiver extends Thread {
 		this.hidOp = hidOp;
 	}
 
+	boolean run =true;
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
 		super.run();
-		while (true) {
+		while (run) {
+			//Log.d(TAG,"in USBReceiver()");
 			Arrays.fill(tempBuf,(byte)0x00);
 			RxCount = hidOp.readReport(tempBuf); // 阻塞读报告
 			if (RxCount > 0) {
@@ -42,15 +43,22 @@ public class USBReceiver extends Thread {
 				}
 
 
-				Log.d(TAG,"通知UI接受到数据"+RxCount);
-				Intent myIntent = new Intent();
-				myIntent.setAction("com.sdses.action.usbrecv");	//指定消息接收者
-				byte[] recv = new byte[RxCount];
-				System.arraycopy(tempBuf, 0, recv, 0, RxCount);
-				myIntent.putExtra("USBdata", recv);
-				myContext.sendBroadcast(myIntent);
+//				Log.d(TAG,"通知UI接受到数据"+RxCount);
+//				Intent myIntent = new Intent();
+//				myIntent.setAction("com.sdses.action.usbrecv");	//指定消息接收者
+//				byte[] recv = new byte[RxCount];
+//				System.arraycopy(tempBuf, 0, recv, 0, RxCount);
+//				myIntent.putExtra("USBdata", recv);
+//				myContext.sendBroadcast(myIntent);
+			}else{
+				Log.d(TAG,"读取hid的流关闭");
+				break;
 			}
 		}
+		Log.d(TAG,"线程退出");
 	}
 
+	public void release() {
+		run =false;
+	}
 }

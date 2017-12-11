@@ -1,9 +1,8 @@
 package com.example.usbhidcom;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
-
-import com.sdses.tool.Util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,7 +50,7 @@ public class HidReport {
 			e.printStackTrace();
 		}
 	}
-
+static int count = 0;
 	public boolean sendFile(String fileName) {
 		FileInputStream reader = null;
 		// 1. 读取文件输入流
@@ -62,17 +61,30 @@ public class HidReport {
 			reader = new FileInputStream(myfile);
 			byte[] buf = new byte[REPORT_LEN];
 			int read = 0;
+			count =0;
 			// 将文件输入流 循环 读入 Socket的输出流中
 			while ((read = reader.read(buf, 2, REPORT_LEN-2)) != -1) {
-
-				Log.d(TAG,"从文件读取字节数:"+read);
+				count++;
+				//Log.d(TAG,"从文件读取字节数:"+read);
 				buf[0] = (byte) ((read>>8)&0xFF);
 				buf[1] = (byte) (read&0xFF);
-				Log.d(TAG,"buf="+ Util.toHexStringWithSpace(buf,read+2));
-				outHid.write(buf, 0, read+2);
+				Log.d(TAG,"getHidState()="+getHidState());
+				//Log.d(TAG,"buf="+ Util.toHexStringWithSpace(buf,REPORT_LEN));
+				outHid.write(buf, 0,REPORT_LEN);
 				outHid.flush();
+				Arrays.fill(buf, (byte) 0x00);
+
+				//				Log.d(TAG,"通知UI接受到数据"+RxCount);
+//				Intent myIntent = new Intent();
+//				myIntent.setAction("com.sdses.action.usbrecv");	//指定消息接收者
+//				myIntent.putExtra("USBdata", read);
+//				context.sendBroadcast(myIntent);
 			}
-			Log.i(TAG, "发送数据结束");
+			Log.i(TAG, "发送数据结束count="+count);
+			Intent myIntent = new Intent();
+			myIntent.setAction("com.sdses.action.usbrecv");	//指定消息接收者
+			myIntent.putExtra("USBdata", count);
+			context.sendBroadcast(myIntent);
 			reader.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -121,24 +133,23 @@ public class HidReport {
 	byte tempBuf[] = new byte[REPORT_LEN];
 	// 读报告，自定义报告首字节存包的数据长度
 	public int readReport(byte RxBuf[]) {
+		//Log.d(TAG,"in readReport()");
 		int count = 0;
 		Arrays.fill(tempBuf, (byte) 0x00);
 		try {
-			if(inHid.available()>0){
-				Log.d(TAG,"inHid.available()="+inHid.available());
 			if (inHid.read(tempBuf, 0, REPORT_LEN) <=0) { // 读取报告
 				return -1;
 			} else {
-				//count = ((tempBuf[0] & 0xFF)<<8)|(tempBuf[1] & 0xFF); // 注意 ，最大是REPORT_LEN
-				count = (tempBuf[0] & 0xFF);
-				Log.d(TAG,"count="+count);
+				count = ((tempBuf[0] & 0xFF)<<8)|(tempBuf[1] & 0xFF); // 注意 ，最大是REPORT_LEN
+				//count = (tempBuf[0] & 0xFF);
+				//Log.d(TAG,"count="+count);
 				// -1，因为用一个当做自定义存放长度
-				System.arraycopy(tempBuf, 1, RxBuf, 0, count);
-			}
+				System.arraycopy(tempBuf, 2, RxBuf, 0, count);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return count;
 		}
 
 		return count;

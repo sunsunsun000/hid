@@ -25,8 +25,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sdses.tool.Util;
-
 public class MainActivity extends Activity {
 	private static final String TAG = MainActivity.class.getSimpleName();
 	// 每20毫秒检查一下USB设备？
@@ -86,6 +84,7 @@ public class MainActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onDestroy();
 		sender.release();
+		recv.release();
 		Log.d(TAG, "App 退出");
 		unregisterReceiver(myBroadcastReceiver);
 	}
@@ -123,6 +122,8 @@ public class MainActivity extends Activity {
 			msg_bluetooth.setData(myBundle);
 			myUSBHandler.sendMessage(msg_bluetooth);
 
+			recvCount = 0;
+			total = 0;
 		}
 
 	}
@@ -324,15 +325,19 @@ Log.d(TAG,"filepath="+filepath);
 		return true;
 	}
 
+	static int recvCount = 0;
+	static int total = 0;
 	public class MyBroadcastReceiver extends BroadcastReceiver {
 
 		@Override
 		public void onReceive(Context arg0, Intent intent) {
 			if (intent.getAction().equals("com.sdses.action.usbrecv")) {
-				byte[] recv = intent.getByteArrayExtra("USBdata");
-				Log.d(TAG,"recv="+Util.toHexStringWithSpace(recv, recv.length));
-				String temp = DateFormat.format("HH:mm:ss", System.currentTimeMillis())+new String(recv);
-                messageRecv.append(temp+"\n");
+				//byte[] recv = intent.getByteArrayExtra("USBdata");
+				recvCount += intent.getIntExtra("USBdata",0);
+				//Log.d(TAG,"recv="+Util.toHexStringWithSpace(recv, recv.length));
+				String temp = ""+DateFormat.format("HH:mm:ss", System.currentTimeMillis())+"包数"+recvCount;
+                //messageRecv.append(temp+"\n");
+				messageRecv.setText(temp);
 			}
 		}
 		
