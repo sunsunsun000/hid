@@ -28,7 +28,7 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 	private static final String TAG = MainActivity.class.getSimpleName();
 	// 每20毫秒检查一下USB设备？
-	HidReport hidOp = null;
+	//HidReport hidOp = null;
 	USBSender sender = null;
 	USBReceiver recv = null;
 	// String HIDTag = new String("lyx");
@@ -60,14 +60,14 @@ public class MainActivity extends Activity {
         messageRecv = (TextView)findViewById(R.id.textView);
         messageRecv.setText(messageRecv.getText(), TextView.BufferType.EDITABLE);
 		context = getApplicationContext();
-		hidOp = new HidReport(context);
-		hidOp.open(); // open usb hid device
+		//hidOp = new HidReport(context);
+		//hidOp.open(); // open usb hid device
 
 		// 创建USB发现线程
-		sender = new USBSender(context, hidOp);
+		sender = new USBSender(context);
 		sender.start();
 		// 创建USB接收线程
-		recv = new USBReceiver(context, hidOp);
+		recv = new USBReceiver(context);
 		recv.start();
 
 		Log.d(TAG, "App 启动");
@@ -80,7 +80,7 @@ public class MainActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		hidOp.close(); // 关闭usb hid
+		//hidOp.close(); // 关闭usb hid
 		// TODO Auto-generated method stub
 		super.onDestroy();
 		sender.release();

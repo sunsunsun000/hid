@@ -16,10 +16,11 @@ public class USBReceiver extends Thread {
 
 	byte tempBuf[] = new byte[HidReport.REPORT_LEN];
 	int RxCount = 0;	//每次接收数据长度
-	public USBReceiver(Context context, HidReport hidOp) {
+	public USBReceiver(Context context) {
 		super();
 		myContext = context;
-		this.hidOp = hidOp;
+		this.hidOp = new HidReport(context);
+		hidOp.open();
 	}
 
 	boolean run =true;

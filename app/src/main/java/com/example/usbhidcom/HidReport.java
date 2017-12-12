@@ -31,9 +31,10 @@ public class HidReport {
 		File fd = new File("/dev/hidg0");
 
 		try {
-			inHid = new FileInputStream(fd);
-			outHid = new FileOutputStream(fd);
-
+			if(inHid==null)
+				inHid = new FileInputStream(fd);
+			if(outHid==null)
+				outHid = new FileOutputStream(fd);
 		} catch (FileNotFoundException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -105,17 +106,15 @@ static int count = 0;
 
 		while (tempLeft > 0) {
 			if (tempLeft > (REPORT_LEN - 1)) {
+				Arrays.fill(tempBuf, (byte) 0x00);
+				tempBuf[0] = (byte) (REPORT_LEN - 1);// 保存传输的字节
 				System.arraycopy(sendBuf, offset, tempBuf, 1, REPORT_LEN - 1);
 				tempLeft -= (REPORT_LEN - 1);
-				tempBuf[0] = (byte) (REPORT_LEN - 1);// 保存传输的字节
 				offset += REPORT_LEN - 1;
 			} else {
-				System.arraycopy(sendBuf, offset, tempBuf, 1, tempLeft);
+				Arrays.fill(tempBuf, (byte) 0x00);
 				tempBuf[0] = (byte) tempLeft; // 保存传输的字节，
-				for (i = 1 + tempLeft; i < REPORT_LEN; i++) // 补0
-				{
-					tempBuf[i] = 0;
-				}
+				System.arraycopy(sendBuf, offset, tempBuf, 1, tempLeft);
 				tempLeft = -1;
 			}
 			try {
@@ -137,6 +136,8 @@ static int count = 0;
 		int count = 0;
 		Arrays.fill(tempBuf, (byte) 0x00);
 		try {
+			if(inHid.available()<0)
+				return -1;
 			if (inHid.read(tempBuf, 0, REPORT_LEN) <=0) { // 读取报告
 				return -1;
 			} else {

@@ -11,9 +11,10 @@ public class USBSender extends Thread{
 	private Looper myLooper = null;
 	private USBSenderHandler myUSBHandler; 
 	HidReport hidOp = null;
-	public USBSender(Context context,HidReport hidOp) {
+	public USBSender(Context context) {
 		this.myContext = context;
-		this.hidOp = hidOp;
+		this.hidOp = new HidReport(context);
+		hidOp.open();
 	}
 	@Override
 	public void run() {
