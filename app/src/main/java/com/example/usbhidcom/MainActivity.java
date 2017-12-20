@@ -63,12 +63,14 @@ public class MainActivity extends Activity {
 		//hidOp = new HidReport(context);
 		//hidOp.open(); // open usb hid device
 
-		// 创建USB发现线程
-		sender = new USBSender(context);
-		sender.start();
 		// 创建USB接收线程
 		recv = new USBReceiver(context);
 		recv.start();
+
+		// 创建USB发现线程
+		sender = new USBSender(context);
+		sender.start();
+
 
 		Log.d(TAG, "App 启动");
         myBroadcastReceiver = new MyBroadcastReceiver();

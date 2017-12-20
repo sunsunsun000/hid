@@ -28,13 +28,50 @@ public class HidReport {
 
 	public void open() // 打开文件
 	{
+		Log.d(TAG,"in open()");
 		File fd = new File("/dev/hidg0");
 
 		try {
-			if(inHid==null)
+			if(inHid==null) {
+				Log.d(TAG,"创建inHid");
 				inHid = new FileInputStream(fd);
+			}
 			if(outHid==null)
 				outHid = new FileOutputStream(fd);
+		} catch (FileNotFoundException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+
+	}
+
+	public void openInHid() // 打开文件
+	{
+		Log.d(TAG,"in openInHid()");
+		File fd = new File("/dev/hidg0");
+
+		try {
+			if(inHid==null) {
+				Log.d(TAG,"创建inHid");
+				inHid = new FileInputStream(fd);
+			}
+		} catch (FileNotFoundException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+
+	}
+
+	public void openOutHid() // 打开文件
+	{
+		Log.d(TAG,"in openOutHid()");
+		File fd = new File("/dev/hidg0");
+
+		try {
+			if(outHid==null) {
+				Log.d(TAG,"new outHid");
+				outHid = new FileOutputStream(fd);
+			}
 		} catch (FileNotFoundException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -136,9 +173,10 @@ static int count = 0;
 		int count = 0;
 		Arrays.fill(tempBuf, (byte) 0x00);
 		try {
-			if(inHid.available()<0)
-				return -1;
+			//if(inHid.available()<0)
+			//	return -1;
 			if (inHid.read(tempBuf, 0, REPORT_LEN) <=0) { // 读取报告
+				Log.d(TAG,"未读取到数据");
 				return -1;
 			} else {
 				count = ((tempBuf[0] & 0xFF)<<8)|(tempBuf[1] & 0xFF); // 注意 ，最大是REPORT_LEN

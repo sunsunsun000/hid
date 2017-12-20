@@ -14,7 +14,7 @@ public class USBSender extends Thread{
 	public USBSender(Context context) {
 		this.myContext = context;
 		this.hidOp = new HidReport(context);
-		hidOp.open();
+		hidOp.openOutHid();
 	}
 	@Override
 	public void run() {

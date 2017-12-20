@@ -20,10 +20,11 @@ public class USBReceiver extends Thread {
 		super();
 		myContext = context;
 		this.hidOp = new HidReport(context);
-		hidOp.open();
+		hidOp.openInHid();
 	}
 
 	boolean run =true;
+	private int count = 0;
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
@@ -53,7 +54,9 @@ public class USBReceiver extends Thread {
 //				myContext.sendBroadcast(myIntent);
 			}else{
 				Log.d(TAG,"读取hid的流关闭");
-				break;
+				//break;
+				if(count++==10)
+					break;
 			}
 		}
 		Log.d(TAG,"线程退出");
