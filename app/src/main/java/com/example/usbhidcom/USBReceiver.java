@@ -29,15 +29,20 @@ public class USBReceiver extends Thread {
 	public void run() {
 		// TODO Auto-generated method stub
 		super.run();
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream("/sdcard/recv.txt", true);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 		while (run) {
 			//Log.d(TAG,"in USBReceiver()");
 			Arrays.fill(tempBuf,(byte)0x00);
 			RxCount = hidOp.readReport(tempBuf); // 阻塞读报告
 			if (RxCount > 0) {
 				try {
-					FileOutputStream fos = new FileOutputStream("/sdcard/recv.txt",true);
 					fos.write(tempBuf,0,RxCount);
-					fos.close();
+					//fos.close();
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -58,6 +63,11 @@ public class USBReceiver extends Thread {
 				if(count++==10)
 					break;
 			}
+		}
+		try {
+			fos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		Log.d(TAG,"线程退出");
 	}
